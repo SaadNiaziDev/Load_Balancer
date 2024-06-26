@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <head>
+  <link rel="import" href="Process.csv">
+</head>
+
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+</head>
+
+<body>
+    <canvas id="chart" width="400",height="800"></canvas>
+    <script>
+            var xlabels = [];
+            var cpu =[];
+            var mem=[];
+            var ylabels=[0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100];
+            chartit();
+            async function chartit(){
+                await getData();
+                const ctx =document.getElementById("chart").getContext("2d");
+                const myChart = new Chart(ctx,{
+                    type: "line",
+                    data:{
+                        labels:xlabels,
+                        datasets:[
+                            {
+                                label:"CPU Usage",
+                                data:cpu,
+                                fill:false,
+                                backgroundColor:"rgba(255, 0, 0, 1)",
+                                borderColor:"rgba(255, 0, 0, 0.55)",
+                                borderWidth:1
+                            },
+                            {
+                                label:"MEM Usage",
+                                data:mem,
+                                fill:false,
+                                backgroundColor:"rgba(0, 255, 0, 1)",
+                                borderColor:"rgba(16, 184, 16, 1)",
+                                borderWidth:1   
+                            }
+                        ]
+                    }
+                });
+           
+        }
+        async function getData() {
+            const response = await fetch('http://127.0.0.1:5500/views/Process.csv')
+            const data = await response.text();
+
+            const table = data.split('\n').slice(1);
+            table.forEach(row => {
+                const column = row.split(',');
+                const time = column[0];
+                xlabels.push(time);
+                const c = column[1];
+                cpu.push(c);
+                const m= column[2];
+                mem.push(m);
+            })
+            console.log(mem);
+            console.log(cpu);
+        }
+    </script>
+</body>
+</html>
